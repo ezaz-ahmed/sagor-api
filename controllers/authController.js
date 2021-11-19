@@ -21,7 +21,7 @@ export const login = asyncHandler(async (req, res) => {
     }).exec(async (err, user) => {
       if (err || !user) {
         return res.status(400).json({
-          error: "Invalid Username",
+          error: "Invalid username or password!",
         });
       } else {
         const token = jwt.sign({ user }, `${process.env.JWT_SECRET}`, {
