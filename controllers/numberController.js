@@ -55,14 +55,14 @@ export const updateNumber = asyncHandler(async (req, res) => {
   try {
     const numberId = req.params.id;
     const { ...updatedData } = req.body;
-    await Number.findByIdAndUpdate(
+    const updatedNumber = await Number.findByIdAndUpdate(
       { _id: numberId },
       { ...updatedData },
       {
         new: true,
       }
     );
-    return res.send({ message: "List Updated Successfully" });
+    return res.send(updatedNumber);
   } catch (error) {
     throw Boom.boomify(error);
   }
