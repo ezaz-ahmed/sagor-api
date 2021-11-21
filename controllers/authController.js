@@ -25,7 +25,7 @@ export const login = asyncHandler(async (req, res) => {
                 expiresIn: '7d',
             });
             res.cookie('token', token);
-            return res.send({ token });
+            return res.send({ token, user });
         });
     } catch (error) {
         throw Boom.boomify(error);

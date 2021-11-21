@@ -23,6 +23,26 @@ export const getAllUser = asyncHandler(async (req, res) => {
     }
 });
 
+export const updateUser = asyncHandler(async (req, res) => {
+
+
+    try {
+        const id = req.params.id;
+        const { ...updatedData } = req.body;
+        const uu = await User.findOne({_id: id})
+        const updatedUser = await User.findByIdAndUpdate(
+            { _id: id },
+            { ...updatedData },
+            {
+                new: true,
+            },
+        );
+        return res.send(updatedUser);
+    } catch (error) {
+        throw Boom.boomify(error);
+    }
+});
+
 export const addUser = asyncHandler(async (req, res) => {
     try {
         const data = new User(req.body);
@@ -38,7 +58,8 @@ export const addUser = asyncHandler(async (req, res) => {
 
 export const deleteUser = asyncHandler(async (req, res) => {
     try {
-        const data = await User.findByIdAndDelete({ _id: req.params.id });
+        const id = req.params.id;
+        const data = await User.findByIdAndDelete({ _id: id });
         res.status(202).send({ message: `${data.username} has been removed` });
     } catch (error) {
         throw Boom.boomify(error);
