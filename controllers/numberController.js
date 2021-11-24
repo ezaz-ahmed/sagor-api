@@ -81,7 +81,7 @@ export const editLimit = asyncHandler(async (req, res) => {
       }
 
       if (number.limit < amount) {
-        return res.status(304).send({ message: "Amount is higher then limit" });
+        return res.send({ message: "Amount is higher then limit" });
       }
 
       number.limit -= parseInt(amount);
@@ -89,11 +89,9 @@ export const editLimit = asyncHandler(async (req, res) => {
         if (err) {
           return res.status(400).send({ error: err });
         }
-        return updatedNumber;
+        return res.send(updatedNumber);
       });
     });
-
-    return res.send({ message: "List Updated Successfully" });
   } catch (error) {
     throw Boom.boomify(error);
   }
