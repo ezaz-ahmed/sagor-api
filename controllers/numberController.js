@@ -1,138 +1,132 @@
-import Boom from 'boom';
-import asyncHandler from 'express-async-handler';
-import Number from '../models/Numbers.js';
+import Boom from "boom";
+import asyncHandler from "express-async-handler";
+import Number from "../models/Numbers.js";
 
 export const getNumbers = asyncHandler(async (req, res) => {
-    try {
-        const { page, limit } = req.query;
-        const option = {
-            page: parseInt(page, 10) || 1,
-            limit: parseInt(limit, 10) || 50,
-        };
+  try {
+    const { page, limit } = req.query;
+    const option = {
+      page: parseInt(page, 10) || 1,
+      limit: parseInt(limit, 10) || 50,
+    };
 
-        const data = await Number.paginate({}, option);
-        res.send(data);
-    } catch (error) {
-        throw Boom.boomify(error);
-    }
+    const data = await Number.paginate({}, option);
+    res.send(data);
+  } catch (error) {
+    throw Boom.boomify(error);
+  }
 });
 
 export const getActiveNumbers = asyncHandler(async (req, res) => {
-    try {
-        const { page, limit } = req.query;
-        const option = {
-            page: parseInt(page, 10) || 1,
-            limit: parseInt(limit, 10) || 50,
-            options: {
-                find: {
-                    active: true,
-                },
-            },
-        };
+  try {
+    const { page, limit } = req.query;
+    const option = {
+      page: parseInt(page, 10) || 1,
+      limit: parseInt(limit, 10) || 50,
+      options: {
+        find: {
+          active: true,
+        },
+      },
+    };
 
-        const data = await Number.paginate({}, option);
-        res.send(data);
-    } catch (error) {
-        throw Boom.boomify(error);
-    }
+    const data = await Number.paginate({}, option);
+    res.send(data);
+  } catch (error) {
+    throw Boom.boomify(error);
+  }
 });
 
 export const addNumber = asyncHandler(async (req, res) => {
-    try {
-        const data = new Number(req.body);
-        data.save();
+  try {
+    const data = new Number(req.body);
+    data.save();
 
-        return res.send({
-            data,
-            message: 'Number saved successfully!',
-        });
-    } catch (error) {
-        throw Boom.boomify(error);
-    }
+    return res.send({
+      data,
+      message: "Number saved successfully!",
+    });
+  } catch (error) {
+    throw Boom.boomify(error);
+  }
 });
 
 export const updateNumber = asyncHandler(async (req, res) => {
-    try {
-        const numberId = req.params.id;
-        const { ...updatedData } = req.body;
-        const updatedNumber = await Number.findByIdAndUpdate(
-            { _id: numberId },
-            { ...updatedData },
-            {
-                new: true,
-            },
-        );
-        return res.send(updatedNumber);
-    } catch (error) {
-        throw Boom.boomify(error);
-    }
+  try {
+    const numberId = req.params.id;
+    const { ...updatedData } = req.body;
+    const updatedNumber = await Number.findByIdAndUpdate(
+      { _id: numberId },
+      { ...updatedData },
+      {
+        new: true,
+      }
+    );
+    return res.send(updatedNumber);
+  } catch (error) {
+    throw Boom.boomify(error);
+  }
 });
 
 export const editLimit = asyncHandler(async (req, res) => {
-    try {
-        const numberId = req.params.id;
-        const { amount } = req.body;
+  try {
+    const numberId = req.params.id;
+    const { amount } = req.body;
 
-        Number.findOne({ _id: numberId }, (err, number) => {
-            if (err || !number) {
-                return res.status(400).json({
-                    error: 'Invalid Number',
-                });
-            }
-
-            if (number.limit < amount) {
-                return res.status(304).send({ message: 'Amount is higher then limit' });
-            }
-
-            number.limit -= parseInt(amount);
-            number.save((err, updatedNumber) => {
-                if (err) {
-                    return res.status(400).send({ error: err });
-                }
-                return updatedNumber;
-            });
+    Number.findOne({ _id: numberId }, (err, number) => {
+      if (err || !number) {
+        return res.status(400).json({
+          error: "Invalid Number",
         });
-        await Number.findByIdAndUpdate(
-            { _id: numberId },
-            { ...updatedData },
-            {
-                new: true,
-            },
-        );
-        return res.send({ message: 'List Updated Successfully' });
-    } catch (error) {
-        throw Boom.boomify(error);
-    }
+      }
+
+      if (number.limit < amount) {
+        return res.status(304).send({ message: "Amount is higher then limit" });
+      }
+
+      number.limit -= parseInt(amount);
+      number.save((err, updatedNumber) => {
+        if (err) {
+          return res.status(400).send({ error: err });
+        }
+        return updatedNumber;
+      });
+    });
+
+    return res.send({ message: "List Updated Successfully" });
+  } catch (error) {
+    throw Boom.boomify(error);
+  }
 });
 
 export const toggleActiveNumber = asyncHandler(async (req, res) => {
-    try {
-        const numberId = req.params.id;
-        Number.findOne({ _id: numberId }, (err, number) => {
-            if (err || !number) {
-                return res.status(400).json({
-                    error: 'Invalid Number',
-                });
-            }
-            number.active = !number.active;
-            number.save((err, updateNumber) => {
-                if (err) {
-                    return res.status(400).send({ error: err });
-                }
-                return updateNumber;
-            });
+  try {
+    const numberId = req.params.id;
+    Number.findOne({ _id: numberId }, (err, number) => {
+      if (err || !number) {
+        return res.status(400).json({
+          error: "Invalid Number",
         });
-    } catch (error) {
-        throw Boom.boomify(error);
-    }
+      }
+      number.active = !number.active;
+      number.save((err, updateNumber) => {
+        if (err) {
+          return res.status(400).send({ error: err });
+        }
+        return updateNumber;
+      });
+    });
+  } catch (error) {
+    throw Boom.boomify(error);
+  }
 });
 
 export const removeNumber = asyncHandler(async (req, res) => {
-    try {
-        const numberId = req.params.id;
-        const deleted = await Number.findOneAndDelete({ _id: numberId });
-        res.status(202).send({ message: `${deleted.number} as been removed!` });
-    } catch (error) {
-        throw Boom.boomify(error);
-    }
+  try {
+    const numberId = req.params.id;
+    const deleted = await Number.findOneAndDelete({ _id: numberId });
+    res.status(202).send({ message: `${deleted.number} as been removed!` });
+  } catch (error) {
+    throw Boom.boomify(error);
+  }
 });

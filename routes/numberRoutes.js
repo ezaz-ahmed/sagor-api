@@ -1,19 +1,17 @@
 import express from "express";
-const router = express.Router();
-
 import {
-  getNumbers,
   addNumber,
+  editLimit,
+  getActiveNumbers,
+  getNumbers,
+  removeNumber,
   toggleActiveNumber,
   updateNumber,
-  removeNumber,
-  getActiveNumbers,
-  editLimit,
 } from "../controllers/numberController.js";
+import { adminCheck, authCheck } from "../middleware/authMiddleware.js";
+const router = express.Router();
 
-import { authCheck, adminCheck } from "../middleware/authMiddleware.js";
-
-router.get("/active", getActiveNumbers);
+router.get("/active", authCheck, getActiveNumbers);
 router.get("/numbers", authCheck, adminCheck, getNumbers);
 router.post("/numbers", authCheck, adminCheck, addNumber);
 router.post("/limit/:id", authCheck, editLimit);
